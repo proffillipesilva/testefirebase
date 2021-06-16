@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-messaging.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyDHe1JcUlSPxfed-PUrzrNpYU_gHjdunYA",
+            authDomain: "test-notifications-f49e8.firebaseapp.com",
+            projectId: "test-notifications-f49e8",
+            storageBucket: "test-notifications-f49e8.appspot.com",
+            messagingSenderId: "876201080502",
+            appId: "1:876201080502:web:2db57256d7bf3e44a59817"
+        };
+        //const key = "AAAA25e8klA:APA91bFZ_25EDOj8OH_Mg5QFSen-enzkP4xgMJkTKyzHbPJ9VE9mp_jWa0Ubu-p1TsuHoN6T8qjv-uaR-3-owcsJ8-zuww-XAmYf1msVJ7wsfxtiGihcY98lBUQv6Qenyf_Jv9vDFTxl"
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Configurando o serviço de messaging
+        const messaging = firebase.messaging();
+
+        function IntitalizeFireBaseMessaging() {
+            messaging
+                .requestPermission()
+                .then(function() {
+                    console.log("Notification Permission");
+                    return messaging.getToken();
+                })
+                .then(function(token) {
+                    console.log("Token : " + token);
+                })
+                .catch(function(reason) {
+                    console.log(reason);
+                });
+        }
+
+        messaging.onMessage(function(payload) {
+            console.log(payload);
+            const notificationOption = {
+                body: payload.notification.body,
+                icon: payload.notification.icon
+            };
+
+            if (Notification.permission === "granted") {
+                var notification = new Notification(payload.notification.title, notificationOption);
+
+                notification.onclick = function(ev) {
+                    ev.preventDefault();
+                    window.open(payload.notification.click_action, '_blank');
+                    notification.close();
+                }
+            }
+
+        });
+        messaging.onTokenRefresh(function() {
+            messaging.getToken()
+                .then(function(newtoken) {
+                    console.log("New Token : " + newtoken);
+                })
+                .catch(function(reason) {
+                    console.log(reason);
+                })
+        })
+        IntitalizeFireBaseMessaging();
+    </script>
+</body>
+
+</html>
